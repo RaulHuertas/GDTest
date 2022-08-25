@@ -14,7 +14,7 @@ var waitingN = true
 N = -1
 H = []
 M = []
-readed = 0
+//readed = 0
 var fs = require("fs");
 const EventEmitter = require('events');
 function stdinLineByLine() {
@@ -36,12 +36,22 @@ function stdinLineByLine() {
 }  
 const stdin = stdinLineByLine();
 processLine = (line)=>{
-console.log("**** "+line)
+  if(line.length==0){
+    //end 
+    console.log(minCost(N,H,M))
+    process.exit()
+  }else{
+    if(waitingN){
+        temp = line.split(/\n|\s/)
+        N = parseInt(temp[0])
+        console.log(`N: ${N}`)
+        waitingN = false
+    }else{
+      temp = line.split(/\n|\s/)
+      console.log(`H: ${temp[0]}`)
+      console.log(`M: ${temp[1]}`)
+    }
+  }
 }
 stdin.on('line', processLine);
-
-
-//Obtain result
-
-console.log(minCost(N,H,M))
 
