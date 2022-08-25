@@ -1,8 +1,8 @@
 //RUN this file as : node test1.js
 //Function definition
 function minCost(N, H, M) {
-  console.log("H: " + H);
-  console.log("M: " + M);
+  //console.log("H: " + H);
+  //console.log("M: " + M);
 
 
 
@@ -15,7 +15,7 @@ function minCost(N, H, M) {
     return cost
   }
 
-  areHeightsOkQ = function (posibleIncrements) {//handy function to check if teh solution is Ok
+  areHeightsOkQ = function (posibleIncrements) {//handy function to check if the solution is Ok
     var ret = true;
     //console.log(`areHeightsOkQ, START, ${posibleIncrements}`)
     for (let i = 1; i < posibleIncrements.length; i++) {
@@ -32,15 +32,12 @@ function minCost(N, H, M) {
     //console.log('areHeightsOkQ, END')
     return ret
   }
-  if(areHeightsOkQ(Array(N).fill(0))){
-    //cover a first initial case
+
+
+  //Cover a first acceptable initial case
+  if(areHeightsOkQ(Array(N).fill(0))){    
     return 0
   }
-
-
-
-
-
 
 
   var result = -404
@@ -57,35 +54,45 @@ function minCost(N, H, M) {
       newPosibleValue++;
     }
   }
+  var firstCost = totalCost(firstIncrements) 
   //We have a solution. Now we need to optimize it
-  
 
   //Brute force aproach
-  var firstCost = totalCost(firstIncrements)
   var bestCost = firstCost
-  var bestOption = Array(N).fill(0)
+  var bestOption = firstIncrements.slice()
   var proposition = Array(N).fill(0)
+  let minIncrement = 0
+  let maxIncrement = maxNumber+N
 
-  for (let i = 0; i < N; i++) {
-    minIncrement = 0
-    maxIncrement = maxNumber + N
-    for (let incr = minIncrement; incr < maxIncrement; incr++) {
-      for (let p = 1; p < N; p++) {
-        proposition[p] = bestOption[p]
+  // for (let i = 0; i < N; i++) {
+  //   proposition[i] = maxIncrement
+  // }
+    
+  for (let incr = minIncrement; incr <= maxIncrement; incr++) {
+    for (let incr2 = minIncrement; incr2 < maxIncrement; incr2++) {
+      for (let i = 0; i < N; i++) {
+        proposition[i] = incr
       }
-      proposition[i] = incr
       if (!areHeightsOkQ(proposition)) {
         continue;
       }
       let proposedCost = totalCost(proposition);
       if (proposedCost < bestCost) {
         bestCost = proposedCost
-        bestOption = proposition
+        for (let p = 0; p < N; p++) {
+          bestOption[p] = proposition[p]
+        }
+        console.log(`bestNewOption: ${bestOption}`)
       }
     }
+    
+
+
 
   }
 
+  
+  console.log(`firstCost: ${firstCost}`)
   console.log(`firstIncrements: ${firstIncrements}`)
   console.log(`bestOption: ${bestOption}`)
   console.log(`areHeightsOkQ: ${areHeightsOkQ(bestOption)}`)
@@ -138,12 +145,12 @@ processLine = (line) => {
     if (waitingN) {
       temp = line.split(/\n|\s/)
       N = parseInt(temp[0])
-      console.log(`N: ${N}`)
+      //console.log(`N: ${N}`)
       waitingN = false
     } else {
       temp = line.split(/\n|\s/)
-      console.log(`H: ${temp[0]}`)
-      console.log(`M: ${temp[1]}`)
+      //console.log(`H: ${temp[0]}`)
+      //console.log(`M: ${temp[1]}`)
       H.push(parseInt(temp[0]))
       M.push(parseInt(temp[1]))
       readed++
