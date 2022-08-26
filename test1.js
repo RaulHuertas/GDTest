@@ -15,6 +15,17 @@ function minCost(N, H, M) {
     return cost
   }
 
+  isEmpty = function (posibleIncrements) {//handy function to calculate cost
+    var ret = true;
+    for (let i = 0; i < posibleIncrements.length; i++) {
+      if (posibleIncrements[i] != 0) {
+        ret = false;
+        break;
+      }
+    }
+    return ret
+  }
+
   areHeightsOkQ = function (posibleIncrements) {//handy function to check if the solution is Ok
     var ret = true;
     //console.log(`areHeightsOkQ, START, ${posibleIncrements}`)
@@ -35,7 +46,7 @@ function minCost(N, H, M) {
 
 
   //Cover a first acceptable initial case
-  if(areHeightsOkQ(Array(N).fill(0))){    
+  if (areHeightsOkQ(Array(N).fill(0))) {
     return 0
   }
 
@@ -54,7 +65,7 @@ function minCost(N, H, M) {
       newPosibleValue++;
     }
   }
-  var firstCost = totalCost(firstIncrements) 
+  var firstCost = totalCost(firstIncrements)
   //We have a solution. Now we need to optimize it
 
   //Brute force aproach
@@ -62,40 +73,78 @@ function minCost(N, H, M) {
   var bestOption = firstIncrements.slice()
   var proposition = Array(N).fill(0)
   let minIncrement = 0
-  let maxIncrement = maxNumber+N
+  let maxIncrement = maxNumber + N
 
-  // for (let i = 0; i < N; i++) {
-  //   proposition[i] = maxIncrement
-  // }
-    
-  for (let incr = minIncrement; incr <= maxIncrement; incr++) {
-    for (let incr2 = minIncrement; incr2 < maxIncrement; incr2++) {
-      for (let i = 0; i < N; i++) {
-        proposition[i] = incr
-      }
-      if (!areHeightsOkQ(proposition)) {
-        continue;
-      }
-      let proposedCost = totalCost(proposition);
-      if (proposedCost < bestCost) {
-        bestCost = proposedCost
-        for (let p = 0; p < N; p++) {
-          bestOption[p] = proposition[p]
-        }
-        console.log(`bestNewOption: ${bestOption}`)
+  var actionColumn = N - 1
+  for (let i = 0; i < N; i++) {
+    proposition[i] = maxIncrement
+  }
+  decreaseProposition = function (maxLen) {//handy function to calculate cost
+    var finishedQ = false;
+    if(maxLen==0){
+      return true;
+    }
+    if(proposition[maxLen-1]>0){
+      proposition[maxLen-1]--      
+    }else{
+      if(maxLen==0){
+        finishedQ = true
+      }{
+        finishedQ = decreaseProposition(maxLen-1)
+        //if((maxLen>=1)&&(maxLen<(proposition.length-1))){
+          proposition[maxLen-1] = maxIncrement  
+        //}
       }
     }
-    
+    // for (let i = maxLen-1; i>=0; i--) {
+    //   if(proposition[i]>0){
+    //     proposition[i]--
+    //     break
+    //   }else{//last Value is zero
+    //     if(i==0){
+    //       finishedQ = true;
+    //       break;
+    //     }else{
+    //       decreaseProposition(maxLen-1)
+    //       //proposition[i-1]--
+    //       // for (let restoreIndex = i; restoreIndex < N; restoreIndex++) {
+    //       //   proposition[restoreIndex] = maxIncrement
+    //       // }
 
-
-
+    //     }
+    //   }
+    // }
+    return finishedQ
   }
 
-  
-  console.log(`firstCost: ${firstCost}`)
-  console.log(`firstIncrements: ${firstIncrements}`)
-  console.log(`bestOption: ${bestOption}`)
-  console.log(`areHeightsOkQ: ${areHeightsOkQ(bestOption)}`)
+
+
+  //var goOn = true
+  do {
+    //console.log(`probando: ${proposition}`)
+    if (areHeightsOkQ(proposition)) {
+      let proposedCost = totalCost(proposition)
+      if (proposedCost < bestCost) {
+        bestCost = proposedCost
+        for (let index = 0; index < N; index++) {
+          bestOption[index] = proposition[index]
+        }
+        //console.log(`bestNEWOption: ${bestOption}`)
+      }
+    }
+    // for (let index = N - 1; index >= 0; index--) {
+    //     isItOverQ = decreaseProposition();
+    // }
+  } while (!decreaseProposition(proposition.length))
+
+
+
+
+
+  // console.log(`firstCost: ${firstCost}`)
+  // console.log(`firstIncrements: ${firstIncrements}`)
+  // console.log(`bestOption: ${bestOption}`)
+  // console.log(`areHeightsOkQ: ${areHeightsOkQ(bestOption)}`)
 
   return bestCost
 }
